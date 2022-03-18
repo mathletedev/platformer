@@ -1,3 +1,3 @@
 # mathlete.dev
 
-> My portfolio website!
+> My portfolio!
