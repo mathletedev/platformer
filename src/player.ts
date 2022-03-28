@@ -1,9 +1,11 @@
 import Entity from "./entity";
 import {
   Vector,
+  __animationSpeed__,
   __friction__,
   __gravity__,
   __jump__,
+  __reset__,
   __size__,
   __speed__,
 } from "./lib";
@@ -14,15 +16,24 @@ export default class Player extends Entity {
     idle: [0, 1],
     moving: [2, 1, 3, 1],
   };
-
   private vel: Vector = { x: 0, y: 0 };
   private grounded = false;
   private flip = false;
   private last = Date.now();
   private counter = 0;
+  public dead = false;
 
   public constructor() {
     super({ x: 0, y: 0 }, { x: __size__ / 2, y: __size__ }, "assets/neo/0.png");
+  }
+
+  public reset() {
+    this.dead = true;
+
+    setTimeout(() => {
+      this.dead = false;
+      this.pos = { x: 0, y: 0 };
+    }, __reset__);
   }
 
   public move(left: boolean, right: boolean) {
@@ -76,13 +87,24 @@ export default class Player extends Entity {
       ? `assets/neo/${Player.FRAMES.moving[this.counter]}.png`
       : `assets/neo/${Player.FRAMES.idle[this.counter]}.png`;
 
-    if (Date.now() > this.last + (moving ? 100 : 200)) {
+    if (
+      Date.now() >
+      this.last +
+        (moving ? __animationSpeed__.moving : __animationSpeed__.idling)
+    ) {
       this.counter++;
       this.last = Date.now();
     }
   }
 
   public draw(ctx: CanvasRenderingContext2D, cam: Vector) {
+    if (
+      this.dead &&
+      Date.now() % (__animationSpeed__.blinking * 2) <
+        __animationSpeed__.blinking
+    )
+      return;
+
     if (this.flip) ctx.scale(-1, 1);
     ctx.drawImage(
       this.sprite,

@@ -5,10 +5,4 @@ const game = new Game();
 
 game.loadMap(map);
 
-const loop = () => {
-	requestAnimationFrame(loop);
-
-	game.tick();
-};
-
-window.onload = () => requestAnimationFrame(loop);
+game.play(true);
