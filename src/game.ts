@@ -167,7 +167,7 @@ export default class Game {
         if (down) this.play(!this.run);
         break;
       case "o":
-        this.player.reset();
+        if (down) this.player.reset();
         break;
     }
 
