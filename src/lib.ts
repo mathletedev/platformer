@@ -21,6 +21,24 @@ export const __animationSpeed__ = {
   blinking: 200,
 };
 export const __reset__ = 1500;
+export const __borders__: Record<string, number> = {
+  "": 16,
+  u: 15,
+  d: 13,
+  l: 12,
+  r: 10,
+  ud: 14,
+  lr: 11,
+  ul: 9,
+  ur: 7,
+  dl: 3,
+  dr: 1,
+  udl: 6,
+  udr: 4,
+  ulr: 8,
+  dlr: 2,
+  udlr: 5,
+};
 
 export interface Vector {
   x: number;

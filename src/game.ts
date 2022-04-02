@@ -1,4 +1,11 @@
-import { Vector, __colors__, __follow__, __ground__, __size__ } from "./lib";
+import {
+  Vector,
+  __borders__,
+  __colors__,
+  __follow__,
+  __ground__,
+  __size__,
+} from "./lib";
 import Player from "./player";
 import Tile from "./tile";
 
@@ -44,7 +51,6 @@ export default class Game {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     for (const tile of this.tiles) tile.draw(this.ctx, this.cam);
-
     this.player.draw(this.ctx, this.cam);
 
     if (this.player.dead) return;
@@ -79,65 +85,13 @@ export default class Game {
         if (this.exists(map, i, j - 1)) borders += "l";
         if (this.exists(map, i, j + 1)) borders += "r";
 
-        let sprite = 0;
-        switch (borders) {
-          case "":
-            sprite = 16;
-            break;
-          case "u":
-            sprite = 15;
-            break;
-          case "d":
-            sprite = 13;
-            break;
-          case "l":
-            sprite = 12;
-            break;
-          case "r":
-            sprite = 10;
-            break;
-          case "ud":
-            sprite = 14;
-            break;
-          case "lr":
-            sprite = 11;
-            break;
-          case "ul":
-            sprite = 9;
-            break;
-          case "ur":
-            sprite = 7;
-            break;
-          case "dl":
-            sprite = 3;
-            break;
-          case "dr":
-            sprite = 1;
-            break;
-          case "udl":
-            sprite = 6;
-            break;
-          case "udr":
-            sprite = 4;
-            break;
-          case "ulr":
-            sprite = 8;
-            break;
-          case "dlr":
-            sprite = 2;
-            break;
-          case "udlr":
-            sprite = 5;
-            break;
-        }
-
         this.tiles.push(
           new Tile(
             {
               x: (j - (map[i].length - 1) / 2) * __size__,
               y: (i - (map.length - 1) / 2) * __size__,
             },
-            sprite - 1
+            __borders__[borders] - 1
           )
         );
       }
