@@ -1,3 +1,4 @@
+import Lava from "./lava";
 import {
   Vector,
   __borders__,
@@ -6,8 +7,8 @@ import {
   __ground__,
   __size__,
 } from "./lib";
+import Platform from "./platform";
 import Player from "./player";
-import Tile from "./tile";
 
 export default class Game {
   private run = false;
@@ -23,7 +24,8 @@ export default class Game {
     y: -window.innerHeight / 2,
   };
   private player = new Player();
-  private tiles: Tile[] = [];
+  private platforms: Platform[] = [];
+  private lavas: Lava[] = [];
 
   public constructor() {
     this.canvas.width = window.innerWidth;
@@ -50,7 +52,11 @@ export default class Game {
     this.ctx.fillStyle = __colors__.blue;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    for (const tile of this.tiles) tile.draw(this.ctx, this.cam);
+    for (const lava of this.lavas) {
+      lava.tick();
+      lava.draw(this.ctx, this.cam);
+    }
+    for (const platform of this.platforms) platform.draw(this.ctx, this.cam);
     this.player.draw(this.ctx, this.cam);
 
     if (this.player.dead) return;
@@ -58,7 +64,11 @@ export default class Game {
     this.player.move(this.keys.left, this.keys.right);
     if (this.keys.jump) this.player.jump();
 
-    this.player.tick(this.tiles, this.keys.left || this.keys.right);
+    this.player.tick(
+      this.platforms,
+      this.lavas,
+      this.keys.left || this.keys.right
+    );
 
     this.cam.x = Math.round(
       this.cam.x -
@@ -79,21 +89,35 @@ export default class Game {
       for (let j = 0; j < map[i].length; j++) {
         if (map[i][j] === 0) continue;
 
-        let borders = "";
-        if (this.exists(map, i - 1, j)) borders += "u";
-        if (this.exists(map, i + 1, j)) borders += "d";
-        if (this.exists(map, i, j - 1)) borders += "l";
-        if (this.exists(map, i, j + 1)) borders += "r";
+        switch (map[i][j]) {
+          case 0:
+            continue;
+          case 1:
+            let borders = "";
+            if (this.exists(map, i - 1, j)) borders += "u";
+            if (this.exists(map, i + 1, j)) borders += "d";
+            if (this.exists(map, i, j - 1)) borders += "l";
+            if (this.exists(map, i, j + 1)) borders += "r";
 
-        this.tiles.push(
-          new Tile(
-            {
-              x: (j - (map[i].length - 1) / 2) * __size__,
-              y: (i - (map.length - 1) / 2) * __size__,
-            },
-            __borders__[borders] - 1
-          )
-        );
+            this.platforms.push(
+              new Platform(
+                {
+                  x: (j - (map[i].length - 1) / 2) * __size__,
+                  y: (i - (map.length - 1) / 2) * __size__,
+                },
+                __borders__[borders] - 1
+              )
+            );
+
+            break;
+          case 2:
+            this.lavas.push(
+              new Lava({
+                x: (j - (map[i].length - 1) / 2) * __size__,
+                y: (i - (map.length - 1) / 2) * __size__,
+              })
+            );
+        }
       }
     }
   }

@@ -19,6 +19,7 @@ export const __animationSpeed__ = {
   idling: 200,
   moving: 100,
   blinking: 200,
+  lava: 500,
 };
 export const __reset__ = 1500;
 export const __borders__: Record<string, number> = {

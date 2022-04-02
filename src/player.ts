@@ -1,4 +1,5 @@
 import Entity from "./entity";
+import Lava from "./lava";
 import {
   Vector,
   __animationSpeed__,
@@ -9,7 +10,7 @@ import {
   __size__,
   __speed__,
 } from "./lib";
-import Tile from "./tile";
+import Platform from "./platform";
 
 export default class Player extends Entity {
   private static FRAMES = {
@@ -45,15 +46,15 @@ export default class Player extends Entity {
     if (this.grounded) this.vel.y = __jump__;
   }
 
-  public tick(tiles: Tile[], moving: boolean) {
+  public tick(platforms: Platform[], lavas: Lava[], moving: boolean) {
     this.pos.x += this.vel.x;
 
-    for (const tile of tiles) {
-      if (this.checkCollision(tile)) {
+    for (const platform of platforms) {
+      if (this.checkCollision(platform)) {
         this.pos.x -=
           this.vel.x > 0
-            ? this.bounds.right - tile.bounds.left
-            : this.bounds.left - tile.bounds.right;
+            ? this.bounds.right - platform.bounds.left
+            : this.bounds.left - platform.bounds.right;
         this.vel.x = 0;
       }
     }
@@ -62,15 +63,19 @@ export default class Player extends Entity {
 
     this.grounded = false;
 
-    for (const tile of tiles) {
-      if (this.checkCollision(tile)) {
+    for (const platform of platforms) {
+      if (this.checkCollision(platform)) {
         this.pos.y -=
           this.vel.y > 0
-            ? this.bounds.top - tile.bounds.bottom
-            : this.bounds.bottom - tile.bounds.top;
+            ? this.bounds.top - platform.bounds.bottom
+            : this.bounds.bottom - platform.bounds.top;
         this.vel.y = 0;
-        this.grounded = this.pos.y < tile.getPosition.y;
+        this.grounded = this.pos.y < platform.getPosition.y;
       }
+    }
+
+    for (const lava of lavas) {
+      if (this.checkCollision(lava)) return this.reset();
     }
 
     this.vel.x *= __friction__;
