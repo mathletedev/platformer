@@ -23,7 +23,7 @@ export default class Player extends Entity {
 	private last = Date.now();
 	private counter = 0;
 	public dead = false;
-	private prev: Record<string, Vector | null> = {
+	private prev: Record<string, Entity | null> = {
 		mushroom: null,
 		link: null
 	};
@@ -84,36 +84,30 @@ export default class Player extends Entity {
 		}
 
 		for (const mushroom of env.mushrooms) {
-			if (
-				this.checkCollision(mushroom) &&
-				this.prev.mushroom !== mushroom.getPosition()
-			) {
+			if (this.checkCollision(mushroom) && this.prev.mushroom !== mushroom) {
 				mushroom.setSquished(true);
 				setTimeout(() => {
 					if (this.checkCollision(mushroom)) this.vel.y = __boost__;
 					mushroom.setSquished(false);
 				}, 500);
 
-				this.prev.mushroom = mushroom.getPosition();
+				this.prev.mushroom = mushroom;
 				continue;
 			}
 
-			if (
-				!this.checkCollision(mushroom) &&
-				this.prev.mushroom === mushroom.getPosition()
-			)
+			if (!this.checkCollision(mushroom) && this.prev.mushroom === mushroom)
 				this.prev.mushroom = null;
 		}
 
 		for (const link of env.links) {
-			if (this.checkCollision(link) && this.prev.link !== link.getPosition()) {
+			if (this.checkCollision(link) && this.prev.link !== link) {
 				link.open();
 
-				this.prev.link = link.getPosition();
+				this.prev.link = link;
 				continue;
 			}
 
-			if (!this.checkCollision(link) && this.prev.link === link.getPosition())
+			if (!this.checkCollision(link) && this.prev.link === link)
 				this.prev.link = null;
 		}
 

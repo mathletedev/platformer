@@ -99,6 +99,7 @@ export default class Game {
 
 		for (const lava of this.env.lavas) lava.tick();
 		for (const mushroom of this.env.mushrooms) mushroom.tick();
+		for (const link of this.env.links) link.tick();
 
 		for (const type of Object.values(this.env)) {
 			for (const entity of type) entity.draw(this.ctx, this.cam);

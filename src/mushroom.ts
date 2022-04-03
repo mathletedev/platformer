@@ -2,7 +2,7 @@ import Entity from "./entity";
 import { Vector, __animationSpeed__, __size__ } from "./lib";
 
 export default class Mushroom extends Entity {
-	private last = Date.now();
+	private last = Date.now() + Math.random() * __animationSpeed__.mushroom;
 	private frame = 0;
 	private ogY: number;
 	private squished = false;
@@ -20,7 +20,7 @@ export default class Mushroom extends Entity {
 		) {
 			this.frame = this.frame === 0 ? 1 : 0;
 			this.sprite.src = `assets/mushroom/${this.frame}.png`;
-			this.last = Date.now() + Math.random() * 200;
+			this.last = Date.now() + Math.random() * __animationSpeed__.mushroom;
 		}
 	}
 
