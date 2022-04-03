@@ -19,7 +19,7 @@ export default class Entity {
 		);
 	}
 
-	public get getPosition() {
+	public getPosition() {
 		return this.pos;
 	}
 

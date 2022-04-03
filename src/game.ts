@@ -96,15 +96,12 @@ export default class Game {
 			this.keys.left || this.keys.right
 		);
 
+		const pos = this.player.getPosition();
 		this.cam.x = Math.round(
-			this.cam.x -
-				(this.cam.x + this.canvas.width / 2 - this.player.getPosition.x) *
-					__follow__.x
+			this.cam.x - (this.cam.x + this.canvas.width / 2 - pos.x) * __follow__.x
 		);
 		this.cam.y = Math.round(
-			this.cam.y -
-				(this.cam.y + this.canvas.height / 2 - this.player.getPosition.y) *
-					__follow__.y
+			this.cam.y - (this.cam.y + this.canvas.height / 2 - pos.y) * __follow__.y
 		);
 
 		if (this.cam.y > __ground__) this.cam.y = __ground__;
@@ -126,23 +123,21 @@ export default class Game {
 						if (this.exists(map, i, j + 1)) borders += "r";
 
 						this.platforms.push(
-							new Platform(
-								{
-									x: (j - (map[i].length - 1) / 2) * __size__,
-									y: (i - (map.length - 1) / 2) * __size__
-								},
-								__borders__[borders] - 1
-							)
+							new Platform(this.fromCoords(i, j, map), __borders__[borders] - 1)
 						);
-
 						break;
 					case 2:
-						this.lavas.push(
-							new Lava({
-								x: (j - (map[i].length - 1) / 2) * __size__,
-								y: (i - (map.length - 1) / 2) * __size__
-							})
-						);
+						this.lavas.push(new Lava(this.fromCoords(i, j, map)));
+						break;
+					case 4:
+						const pos = this.fromCoords(i, j, map);
+
+						this.player.setPosition(pos);
+						this.cam = {
+							x: pos.x - window.innerWidth / 2,
+							y: pos.y - window.innerHeight / 2
+						};
+						break;
 				}
 			}
 		}
@@ -176,6 +171,13 @@ export default class Game {
 		}
 
 		ev.preventDefault();
+	}
+
+	private fromCoords(i: number, j: number, map: number[][]): Vector {
+		return {
+			x: (j - (map[i].length - 1) / 2) * __size__,
+			y: (i - (map.length - 1) / 2) * __size__
+		};
 	}
 
 	private exists(map: number[][], i: number, j: number) {

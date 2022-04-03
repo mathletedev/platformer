@@ -70,7 +70,7 @@ export default class Player extends Entity {
 						? this.bounds.top - platform.bounds.bottom
 						: this.bounds.bottom - platform.bounds.top;
 				this.vel.y = 0;
-				this.grounded = this.pos.y < platform.getPosition.y;
+				this.grounded = this.pos.y < platform.getPosition().y;
 			}
 		}
 
@@ -118,6 +118,10 @@ export default class Player extends Entity {
 			this.pos.y - this.size.y / 2 - cam.y
 		);
 		if (this.flip) ctx.scale(-1, 1);
+	}
+
+	public setPosition(pos: Vector) {
+		this.pos = pos;
 	}
 
 	public setFlip(flip: boolean) {
