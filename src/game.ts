@@ -10,6 +10,7 @@ import {
 } from "./lib";
 import Platform from "./platform";
 import Player from "./player";
+import Text from "./text";
 
 export default class Game {
 	private run = false;
@@ -27,6 +28,9 @@ export default class Game {
 	private player = new Player();
 	private platforms: Platform[] = [];
 	private lavas: Lava[] = [];
+	private texts: Text[] = [
+		new Text({ x: 0, y: 384 }, "MathleteDev", 64, __colors__.black)
+	];
 
 	public constructor() {
 		this.canvas.width = window.innerWidth;
@@ -78,6 +82,7 @@ export default class Game {
 			lava.draw(this.ctx, this.cam);
 		}
 		for (const platform of this.platforms) platform.draw(this.ctx, this.cam);
+		for (const text of this.texts) text.draw(this.ctx, this.cam);
 		this.player.draw(this.ctx, this.cam);
 
 		if (this.player.dead) return;
