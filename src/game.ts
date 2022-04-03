@@ -1,5 +1,6 @@
 import Lava from "./lava";
 import {
+	Environment,
 	Vector,
 	__borders__,
 	__colors__,
@@ -8,6 +9,7 @@ import {
 	__ground__,
 	__size__
 } from "./lib";
+import Mushroom from "./mushroom";
 import Platform from "./platform";
 import Player from "./player";
 import Text from "./text";
@@ -26,8 +28,11 @@ export default class Game {
 		y: -window.innerHeight / 2
 	};
 	private player = new Player();
-	private platforms: Platform[] = [];
-	private lavas: Lava[] = [];
+	private env: Environment = {
+		platforms: [],
+		lavas: [],
+		mushrooms: []
+	};
 	private texts: Text[] = [
 		new Text({ x: 0, y: 384 }, "MathleteDev", 64, __colors__.black)
 	];
@@ -77,11 +82,12 @@ export default class Game {
 		this.ctx.fillStyle = __colors__.blue;
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-		for (const lava of this.lavas) {
-			lava.tick();
-			lava.draw(this.ctx, this.cam);
+		for (const lava of this.env.lavas) lava.tick();
+		for (const mushroom of this.env.mushrooms) mushroom.tick();
+
+		for (const type of Object.values(this.env)) {
+			for (const entity of type) entity.draw(this.ctx, this.cam);
 		}
-		for (const platform of this.platforms) platform.draw(this.ctx, this.cam);
 		for (const text of this.texts) text.draw(this.ctx, this.cam);
 		this.player.draw(this.ctx, this.cam);
 
@@ -90,11 +96,7 @@ export default class Game {
 		this.player.move(this.keys.left, this.keys.right);
 		if (this.keys.jump) this.player.jump();
 
-		this.player.tick(
-			this.platforms,
-			this.lavas,
-			this.keys.left || this.keys.right
-		);
+		this.player.tick(this.env, this.keys.left || this.keys.right);
 
 		const pos = this.player.getPosition();
 		this.cam.x = Math.round(
@@ -122,12 +124,15 @@ export default class Game {
 						if (this.exists(map, i, j - 1)) borders += "l";
 						if (this.exists(map, i, j + 1)) borders += "r";
 
-						this.platforms.push(
+						this.env.platforms.push(
 							new Platform(this.fromCoords(i, j, map), __borders__[borders] - 1)
 						);
 						break;
 					case 2:
-						this.lavas.push(new Lava(this.fromCoords(i, j, map)));
+						this.env.lavas.push(new Lava(this.fromCoords(i, j, map)));
+						break;
+					case 3:
+						this.env.mushrooms.push(new Mushroom(this.fromCoords(i, j, map)));
 						break;
 					case 4:
 						const pos = this.fromCoords(i, j, map);

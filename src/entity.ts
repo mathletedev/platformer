@@ -31,13 +31,4 @@ export default class Entity {
 			bottom: this.pos.y + this.size.y / 2
 		};
 	}
-
-	public checkCollision(other: Entity) {
-		return (
-			this.bounds.left < other.bounds.right &&
-			this.bounds.right > other.bounds.left &&
-			this.bounds.top < other.bounds.bottom &&
-			this.bounds.bottom > other.bounds.top
-		);
-	}
 }

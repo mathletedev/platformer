@@ -1,8 +1,9 @@
 import Entity from "./entity";
-import Lava from "./lava";
 import {
+	Environment,
 	Vector,
 	__animationSpeed__,
+	__boost__,
 	__friction__,
 	__gravity__,
 	__jump__,
@@ -10,7 +11,6 @@ import {
 	__size__,
 	__speed__
 } from "./lib";
-import Platform from "./platform";
 
 export default class Player extends Entity {
 	private static FRAMES = {
@@ -23,6 +23,7 @@ export default class Player extends Entity {
 	private last = Date.now();
 	private counter = 0;
 	public dead = false;
+	private prevMushroom: Vector | null = null;
 
 	public constructor() {
 		super({ x: 0, y: 0 }, { x: __size__ / 2, y: __size__ }, "assets/neo/0.png");
@@ -46,10 +47,10 @@ export default class Player extends Entity {
 		if (this.grounded) this.vel.y = __jump__;
 	}
 
-	public tick(platforms: Platform[], lavas: Lava[], moving: boolean) {
+	public tick(env: Environment, moving: boolean) {
 		this.pos.x += this.vel.x;
 
-		for (const platform of platforms) {
+		for (const platform of env.platforms) {
 			if (this.checkCollision(platform)) {
 				this.pos.x -=
 					this.vel.x > 0
@@ -63,7 +64,7 @@ export default class Player extends Entity {
 
 		this.grounded = false;
 
-		for (const platform of platforms) {
+		for (const platform of env.platforms) {
 			if (this.checkCollision(platform)) {
 				this.pos.y -=
 					this.vel.y > 0
@@ -74,8 +75,29 @@ export default class Player extends Entity {
 			}
 		}
 
-		for (const lava of lavas) {
+		for (const lava of env.lavas) {
 			if (this.checkCollision(lava)) return this.reset();
+		}
+
+		for (const mushroom of env.mushrooms) {
+			if (
+				this.checkCollision(mushroom) &&
+				this.prevMushroom !== mushroom.getPosition()
+			) {
+				this.prevMushroom = mushroom.getPosition();
+				mushroom.setSquished(true);
+
+				return setTimeout(() => {
+					if (this.checkCollision(mushroom)) this.vel.y = __boost__;
+					mushroom.setSquished(false);
+				}, 500);
+			}
+
+			if (
+				!this.checkCollision(mushroom) &&
+				this.prevMushroom === mushroom.getPosition()
+			)
+				this.prevMushroom = null;
 		}
 
 		this.vel.x *= __friction__;
@@ -118,6 +140,15 @@ export default class Player extends Entity {
 			this.pos.y - this.size.y / 2 - cam.y
 		);
 		if (this.flip) ctx.scale(-1, 1);
+	}
+
+	private checkCollision(other: Entity) {
+		return (
+			this.bounds.left < other.bounds.right &&
+			this.bounds.right > other.bounds.left &&
+			this.bounds.top < other.bounds.bottom &&
+			this.bounds.bottom > other.bounds.top
+		);
 	}
 
 	public setPosition(pos: Vector) {
