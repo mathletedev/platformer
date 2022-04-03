@@ -9,6 +9,7 @@ import {
 	__ground__,
 	__size__
 } from "./lib";
+import Link from "./link";
 import Mushroom from "./mushroom";
 import Platform from "./platform";
 import Player from "./player";
@@ -28,10 +29,12 @@ export default class Game {
 		y: -window.innerHeight / 2
 	};
 	private player = new Player();
+	private start: Vector = { x: 0, y: 0 };
 	private env: Environment = {
 		platforms: [],
 		lavas: [],
-		mushrooms: []
+		mushrooms: [],
+		links: []
 	};
 	private texts: Text[] = [
 		new Text({ x: 0, y: 384 }, "MathleteDev", 64, __colors__.black)
@@ -49,6 +52,8 @@ export default class Game {
 		document.addEventListener("keydown", (ev) => this.handleKey(ev, true));
 		document.addEventListener("keyup", (ev) => this.handleKey(ev, false));
 		document.addEventListener("touchstart", (ev) => {
+			if (this.player.dead) return;
+
 			if (ev.touches[0].clientY < this.canvas.height * __deadband__.vertical)
 				this.keys.jump = true;
 
@@ -76,6 +81,16 @@ export default class Game {
 		if (run) requestAnimationFrame(() => this.tick());
 	}
 
+	public reset() {
+		this.keys = {
+			left: false,
+			right: false,
+			jump: false
+		};
+
+		this.player.reset(Object.assign({}, this.start));
+	}
+
 	public tick() {
 		if (this.run) requestAnimationFrame(() => this.tick());
 
@@ -96,7 +111,10 @@ export default class Game {
 		this.player.move(this.keys.left, this.keys.right);
 		if (this.keys.jump) this.player.jump();
 
-		this.player.tick(this.env, this.keys.left || this.keys.right);
+		if (
+			this.player.tick(this.env, this.keys.left || this.keys.right) === "reset"
+		)
+			this.reset();
 
 		const pos = this.player.getPosition();
 		this.cam.x = Math.round(
@@ -135,13 +153,21 @@ export default class Game {
 						this.env.mushrooms.push(new Mushroom(this.fromCoords(i, j, map)));
 						break;
 					case 4:
-						const pos = this.fromCoords(i, j, map);
+						this.start = this.fromCoords(i, j, map);
 
-						this.player.setPosition(pos);
+						this.player.setPosition(Object.assign({}, this.start));
 						this.cam = {
-							x: pos.x - window.innerWidth / 2,
-							y: pos.y - window.innerHeight / 2
+							x: this.start.x - window.innerWidth / 2,
+							y: this.start.y - window.innerHeight / 2
 						};
+						break;
+					case 5:
+						this.env.links.push(
+							new Link(
+								this.fromCoords(i, j, map),
+								"https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+							)
+						);
 						break;
 				}
 			}
@@ -149,6 +175,8 @@ export default class Game {
 	}
 
 	private handleKey(ev: KeyboardEvent, down: boolean) {
+		if (this.player.dead) return;
+
 		switch (ev.key) {
 			default:
 				return;
@@ -171,7 +199,7 @@ export default class Game {
 				if (down) this.play(!this.run);
 				break;
 			case "o":
-				if (down) this.player.reset();
+				if (down) this.reset();
 				break;
 		}
 

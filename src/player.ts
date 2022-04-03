@@ -23,18 +23,22 @@ export default class Player extends Entity {
 	private last = Date.now();
 	private counter = 0;
 	public dead = false;
-	private prevMushroom: Vector | null = null;
+	private prev: Record<string, Vector | null> = {
+		mushroom: null,
+		link: null
+	};
 
 	public constructor() {
 		super({ x: 0, y: 0 }, { x: __size__ / 2, y: __size__ }, "assets/neo/0.png");
 	}
 
-	public reset() {
+	public reset(start: Vector) {
 		this.dead = true;
 
 		setTimeout(() => {
 			this.dead = false;
-			this.pos = { x: 0, y: 0 };
+			this.pos = start;
+			this.vel = { x: 0, y: 0 };
 		}, __reset__);
 	}
 
@@ -76,28 +80,41 @@ export default class Player extends Entity {
 		}
 
 		for (const lava of env.lavas) {
-			if (this.checkCollision(lava)) return this.reset();
+			if (this.checkCollision(lava)) return "reset";
 		}
 
 		for (const mushroom of env.mushrooms) {
 			if (
 				this.checkCollision(mushroom) &&
-				this.prevMushroom !== mushroom.getPosition()
+				this.prev.mushroom !== mushroom.getPosition()
 			) {
-				this.prevMushroom = mushroom.getPosition();
 				mushroom.setSquished(true);
-
-				return setTimeout(() => {
+				setTimeout(() => {
 					if (this.checkCollision(mushroom)) this.vel.y = __boost__;
 					mushroom.setSquished(false);
 				}, 500);
+
+				this.prev.mushroom = mushroom.getPosition();
+				continue;
 			}
 
 			if (
 				!this.checkCollision(mushroom) &&
-				this.prevMushroom === mushroom.getPosition()
+				this.prev.mushroom === mushroom.getPosition()
 			)
-				this.prevMushroom = null;
+				this.prev.mushroom = null;
+		}
+
+		for (const link of env.links) {
+			if (this.checkCollision(link) && this.prev.link !== link.getPosition()) {
+				link.open();
+
+				this.prev.link = link.getPosition();
+				continue;
+			}
+
+			if (!this.checkCollision(link) && this.prev.link === link.getPosition())
+				this.prev.link = null;
 		}
 
 		this.vel.x *= __friction__;

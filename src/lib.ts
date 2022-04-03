@@ -1,4 +1,5 @@
 import Lava from "./lava";
+import Link from "./link";
 import Mushroom from "./mushroom";
 import Platform from "./platform";
 
@@ -61,4 +62,5 @@ export interface Environment {
 	platforms: Platform[];
 	lavas: Lava[];
 	mushrooms: Mushroom[];
+	links: Link[];
 }
