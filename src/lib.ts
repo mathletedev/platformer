@@ -1,3 +1,4 @@
+import Coin from "./coin";
 import Lava from "./lava";
 import Link from "./link";
 import Mushroom from "./mushroom";
@@ -25,10 +26,11 @@ export const __deadband__ = {
 	horizontal: 0.3,
 	vertical: 0.45
 };
-export const __animationSpeed__ = {
+export const __animation__ = {
 	idling: 200,
 	moving: 100,
 	blinking: 200,
+	coin: 100,
 	lava: 500,
 	mushroom: 300,
 	boost: 500
@@ -60,6 +62,7 @@ export interface Vector {
 
 export interface Environment {
 	platforms: Platform[];
+	coins: Coin[];
 	lavas: Lava[];
 	mushrooms: Mushroom[];
 	links: Link[];

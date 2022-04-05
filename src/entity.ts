@@ -31,4 +31,8 @@ export default class Entity {
 			bottom: this.pos.y + this.size.y / 2
 		};
 	}
+
+	public static getFrame(speed: number, total: number) {
+		return Math.floor((Date.now() % (speed * total)) / speed);
+	}
 }

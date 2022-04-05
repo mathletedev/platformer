@@ -2,7 +2,7 @@ import Entity from "./entity";
 import {
 	Environment,
 	Vector,
-	__animationSpeed__,
+	__animation__,
 	__boost__,
 	__friction__,
 	__gravity__,
@@ -79,6 +79,11 @@ export default class Player extends Entity {
 			}
 		}
 
+		for (const coin of env.coins) {
+			if (this.checkCollision(coin))
+				env.coins.splice(env.coins.indexOf(coin), 1);
+		}
+
 		for (const lava of env.lavas) {
 			if (this.checkCollision(lava)) return "reset";
 		}
@@ -127,8 +132,7 @@ export default class Player extends Entity {
 
 		if (
 			Date.now() >
-			this.last +
-				(moving ? __animationSpeed__.moving : __animationSpeed__.idling)
+			this.last + (moving ? __animation__.moving : __animation__.idling)
 		) {
 			this.counter++;
 			this.last = Date.now();
@@ -138,8 +142,7 @@ export default class Player extends Entity {
 	public draw(ctx: CanvasRenderingContext2D, cam: Vector) {
 		if (
 			this.dead &&
-			Date.now() % (__animationSpeed__.blinking * 2) <
-				__animationSpeed__.blinking
+			Date.now() % (__animation__.blinking * 2) < __animation__.blinking
 		)
 			return;
 

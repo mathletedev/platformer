@@ -1,3 +1,4 @@
+import Coin from "./coin";
 import Lava from "./lava";
 import {
 	Environment,
@@ -32,6 +33,7 @@ export default class Game {
 	private start: Vector = { x: 0, y: 0 };
 	private env: Environment = {
 		platforms: [],
+		coins: [],
 		lavas: [],
 		mushrooms: [],
 		links: []
@@ -39,6 +41,7 @@ export default class Game {
 	private texts: Text[] = [
 		new Text({ x: 0, y: 384 }, "MathleteDev", 64, __colors__.black)
 	];
+	private coins = 0;
 
 	public constructor() {
 		this.canvas.width = window.innerWidth;
@@ -97,15 +100,23 @@ export default class Game {
 		this.ctx.fillStyle = __colors__.blue;
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-		for (const lava of this.env.lavas) lava.tick();
-		for (const mushroom of this.env.mushrooms) mushroom.tick();
-		for (const link of this.env.links) link.tick();
-
 		for (const type of Object.values(this.env)) {
-			for (const entity of type) entity.draw(this.ctx, this.cam);
+			for (const entity of type) {
+				if (!!entity.tick) entity.tick();
+				entity.draw(this.ctx, this.cam);
+			}
 		}
 		for (const text of this.texts) text.draw(this.ctx, this.cam);
 		this.player.draw(this.ctx, this.cam);
+
+		let coin = new Image();
+		coin.src = "assets/coin/0.png";
+
+		this.ctx.drawImage(coin, 20, 20);
+
+		this.ctx.fillStyle = __colors__.black;
+		this.ctx.font = "24px Cascadia Code";
+		this.ctx.fillText((this.coins - this.env.coins.length).toString(), 55, 44);
 
 		if (this.player.dead) return;
 
@@ -148,10 +159,10 @@ export default class Game {
 						);
 						break;
 					case 2:
-						this.env.lavas.push(new Lava(this.fromCoords(i, j, map)));
+						this.env.coins.push(new Coin(this.fromCoords(i, j, map)));
 						break;
 					case 3:
-						this.env.mushrooms.push(new Mushroom(this.fromCoords(i, j, map)));
+						this.env.lavas.push(new Lava(this.fromCoords(i, j, map)));
 						break;
 					case 4:
 						this.start = this.fromCoords(i, j, map);
@@ -163,6 +174,9 @@ export default class Game {
 						};
 						break;
 					case 5:
+						this.env.mushrooms.push(new Mushroom(this.fromCoords(i, j, map)));
+						break;
+					case 6:
 						this.env.links.push(
 							new Link(
 								this.fromCoords(i, j, map),
@@ -173,6 +187,8 @@ export default class Game {
 				}
 			}
 		}
+
+		this.coins = this.env.coins.length;
 	}
 
 	private handleKey(ev: KeyboardEvent, down: boolean) {
