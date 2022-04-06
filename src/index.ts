@@ -1,5 +1,5 @@
 import Game from "./game";
-import map from "./map.json";
+import map from "./lib/map.json";
 
 const game = new Game();
 

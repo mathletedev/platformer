@@ -1,14 +1,15 @@
-import Entity from "./entity";
-import { Vector, __animation__, __size__ } from "./lib";
+import { __animation__, __size__ } from "../lib/constants";
+import Vector from "../lib/vector";
+import { Entity } from "./entity";
 
-export default class Mushroom extends Entity {
+export class Mushroom extends Entity {
 	private last = Date.now() + Math.random() * __animation__.mushroom;
 	private frame = 0;
 	private og: number;
 	private squished = false;
 
 	public constructor(pos: Vector) {
-		super(pos, { x: __size__, y: __size__ }, `assets/mushroom/0.png`);
+		super(pos, Vector.UNIT, `assets/mushroom/0.png`);
 
 		this.og = pos.y;
 	}

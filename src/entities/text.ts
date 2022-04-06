@@ -1,6 +1,6 @@
-import { Vector } from "./lib";
+import Vector from "../lib/vector";
 
-export default class Text {
+export class Text {
 	private pos: Vector;
 	private text: string;
 	private size: number;

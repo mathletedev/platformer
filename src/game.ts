@@ -1,20 +1,14 @@
-import Coin from "./coin";
-import Lava from "./lava";
+import {Coin, Lava, Link, Mushroom, Platform, Player, Text} from "./entities";
 import {
-	Environment,
-	Vector,
 	__borders__,
 	__colors__,
 	__deadband__,
 	__follow__,
 	__ground__,
 	__size__
-} from "./lib";
-import Link from "./link";
-import Mushroom from "./mushroom";
-import Platform from "./platform";
-import Player from "./player";
-import Text from "./text";
+} from "./lib/constants";
+import {Environment} from "./lib/types";
+import Vector from "./lib/vector";
 
 export default class Game {
 	private run = false;
@@ -25,12 +19,9 @@ export default class Game {
 		right: false,
 		jump: false
 	};
-	private cam: Vector = {
-		x: -window.innerWidth / 2,
-		y: -window.innerHeight / 2
-	};
+	private cam = new Vector(-window.innerWidth / 2, -window.innerHeight / 2);
 	private player = new Player();
-	private start: Vector = { x: 0, y: 0 };
+	private start = Vector.ZERO;
 	private env: Environment = {
 		platforms: [],
 		coins: [],
@@ -39,7 +30,7 @@ export default class Game {
 		links: []
 	};
 	private texts: Text[] = [
-		new Text({ x: 0, y: 384 }, "MathleteDev", 64, __colors__.black)
+		new Text(new Vector(0, 384), "MathleteDev", 64, __colors__.black)
 	];
 	private coins = 0;
 
@@ -129,13 +120,10 @@ export default class Game {
 			this.reset();
 
 		const pos = this.player.getPosition();
-		this.cam.x = Math.round(
-			this.cam.x - (this.cam.x + this.canvas.width / 2 - pos.x) * __follow__.x
-		);
-		this.cam.y = Math.round(
-			this.cam.y - (this.cam.y + this.canvas.height / 2 - pos.y) * __follow__.y
-		);
+		this.cam.x -= (this.cam.x + this.canvas.width / 2 - pos.x) * __follow__.x;
+		this.cam.y -= (this.cam.y + this.canvas.height / 2 - pos.y) * __follow__.y;
 
+		this.cam = this.cam.round();
 		if (this.cam.y > __ground__) this.cam.y = __ground__;
 	}
 
@@ -168,10 +156,8 @@ export default class Game {
 						this.start = this.fromCoords(i, j, map);
 
 						this.player.setPosition(Object.assign({}, this.start));
-						this.cam = {
-							x: this.start.x - window.innerWidth / 2,
-							y: this.start.y - window.innerHeight / 2
-						};
+						this.cam.x = this.start.x - window.innerWidth / 2;
+						this.cam.y = this.start.y - window.innerHeight / 2;
 						break;
 					case 5:
 						this.env.mushrooms.push(new Mushroom(this.fromCoords(i, j, map)));
@@ -224,10 +210,10 @@ export default class Game {
 	}
 
 	private fromCoords(i: number, j: number, map: number[][]): Vector {
-		return {
-			x: (j - (map[i].length - 1) / 2) * __size__,
-			y: (i - (map.length - 1) / 2) * __size__
-		};
+		return new Vector(
+			(j - (map[i].length - 1) / 2) * __size__,
+			(i - (map.length - 1) / 2) * __size__
+		);
 	}
 
 	private exists(map: number[][], i: number, j: number) {

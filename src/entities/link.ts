@@ -1,22 +1,20 @@
-import Entity from "./entity";
-import { Vector, __animation__, __size__ } from "./lib";
+import {__animation__} from "../lib/constants";
+import Vector from "../lib/vector";
+import {Entity} from "./entity";
 
-export default class Link extends Entity {
+export class Link extends Entity {
 	private og: number;
 	private url: string;
 
 	public constructor(pos: Vector, url: string) {
-		super(pos, { x: __size__, y: __size__ }, "assets/coin/0.png");
+		super(pos, Vector.UNIT, "assets/coin/0.png");
 
 		this.og = pos.y;
 		this.url = url;
 	}
 
 	public tick() {
-		this.pos = {
-			x: this.pos.x,
-			y: this.og + Math.sin(Date.now() * 0.01) * 2
-		};
+		this.pos.y = this.og + Math.sin(Date.now() * 0.01) * 2;
 
 		this.sprite.src = `assets/coin/${Entity.getFrame(
 			__animation__.coin,

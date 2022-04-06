@@ -1,7 +1,4 @@
-import Entity from "./entity";
 import {
-	Environment,
-	Vector,
 	__animation__,
 	__boost__,
 	__friction__,
@@ -10,14 +7,17 @@ import {
 	__reset__,
 	__size__,
 	__speed__
-} from "./lib";
+} from "../lib/constants";
+import { Environment } from "../lib/types";
+import Vector from "../lib/vector";
+import { Entity } from "./entity";
 
-export default class Player extends Entity {
+export class Player extends Entity {
 	private static FRAMES = {
 		idle: [0, 1],
 		moving: [2, 1, 3, 1]
 	};
-	private vel: Vector = { x: 0, y: 0 };
+	private vel = Vector.ZERO;
 	private grounded = false;
 	private flip = false;
 	private last = Date.now();
@@ -29,7 +29,7 @@ export default class Player extends Entity {
 	};
 
 	public constructor() {
-		super({ x: 0, y: 0 }, { x: __size__ / 2, y: __size__ }, "assets/neo/0.png");
+		super(Vector.ZERO, new Vector(__size__ / 2, __size__), "assets/neo/0.png");
 	}
 
 	public reset(start: Vector) {
@@ -38,7 +38,7 @@ export default class Player extends Entity {
 		setTimeout(() => {
 			this.dead = false;
 			this.pos = start;
-			this.vel = { x: 0, y: 0 };
+			this.vel = Vector.ZERO;
 		}, __reset__);
 	}
 

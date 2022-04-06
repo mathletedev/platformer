@@ -1,6 +1,6 @@
-import { Vector } from "./lib";
+import Vector from "../lib/vector";
 
-export default class Entity {
+export class Entity {
 	protected pos: Vector;
 	protected size: Vector;
 	protected sprite: HTMLImageElement = new Image();

@@ -1,8 +1,4 @@
-import Coin from "./coin";
-import Lava from "./lava";
-import Link from "./link";
-import Mushroom from "./mushroom";
-import Platform from "./platform";
+import Vector from "./vector";
 
 export const __fps__ = 60;
 export const __colors__ = {
@@ -19,7 +15,7 @@ export const __jump__ = 10;
 export const __boost__ = 15;
 export const __friction__ = 0.9;
 export const __gravity__ = 0.5;
-export const __follow__: Vector = { x: 0.05, y: 0.1 };
+export const __follow__ = new Vector(0.05, 0.1);
 export const __size__ = 32;
 export const __ground__ = -400;
 export const __deadband__ = {
@@ -54,16 +50,3 @@ export const __borders__: Record<string, number> = {
 	dlr: 2,
 	udlr: 5
 };
-
-export interface Vector {
-	x: number;
-	y: number;
-}
-
-export interface Environment {
-	platforms: Platform[];
-	coins: Coin[];
-	lavas: Lava[];
-	mushrooms: Mushroom[];
-	links: Link[];
-}
