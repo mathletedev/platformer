@@ -20,8 +20,6 @@ export class Player extends Entity {
 	private vel = Vector.ZERO;
 	private grounded = false;
 	private flip = false;
-	private last = Date.now();
-	private counter = 0;
 	public dead = false;
 	private prev: Record<string, Entity | null> = {
 		mushroom: null,
