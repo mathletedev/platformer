@@ -1,5 +1,15 @@
-import {Coin, Lava, Link, Mushroom, Platform, Player, Text} from "./entities";
 import {
+	Coin,
+	Entity,
+	Lava,
+	Link,
+	Mushroom,
+	Platform,
+	Player,
+	Text
+} from "./entities";
+import {
+	__animation__,
 	__borders__,
 	__colors__,
 	__deadband__,
@@ -101,7 +111,7 @@ export default class Game {
 		this.player.draw(this.ctx, this.cam);
 
 		let coin = new Image();
-		coin.src = "assets/coin/0.png";
+		coin.src = `assets/coin/${Entity.getFrame(__animation__.coin, 6)}.png`;
 
 		this.ctx.drawImage(coin, 20, 20);
 

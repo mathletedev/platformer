@@ -8,9 +8,9 @@ import {
 	__size__,
 	__speed__
 } from "../lib/constants";
-import { Environment } from "../lib/types";
+import {Environment} from "../lib/types";
 import Vector from "../lib/vector";
-import { Entity } from "./entity";
+import {Entity} from "./entity";
 
 export class Player extends Entity {
 	private static FRAMES = {
@@ -124,19 +124,11 @@ export class Player extends Entity {
 		if (this.vel.y + __gravity__ < 0)
 			return (this.sprite.src = "assets/neo/5.png");
 
-		if (this.counter >= (moving ? 4 : 2)) this.counter = 0;
-
-		this.sprite.src = moving
-			? `assets/neo/${Player.FRAMES.moving[this.counter]}.png`
-			: `assets/neo/${Player.FRAMES.idle[this.counter]}.png`;
-
-		if (
-			Date.now() >
-			this.last + (moving ? __animation__.moving : __animation__.idling)
-		) {
-			this.counter++;
-			this.last = Date.now();
-		}
+		this.sprite.src = `assets/neo/${
+			moving
+				? Player.FRAMES.moving[Entity.getFrame(__animation__.moving, 4)]
+				: Player.FRAMES.idle[Entity.getFrame(__animation__.idling, 2)]
+		}.png`;
 	}
 
 	public draw(ctx: CanvasRenderingContext2D, cam: Vector) {
