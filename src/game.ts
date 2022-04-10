@@ -30,7 +30,7 @@ export default class Game {
 		jump: false
 	};
 	private cam = new Vector(-window.innerWidth / 2, -window.innerHeight / 2);
-	private player = new Player();
+	private player = new Player(Vector.ZERO);
 	private start = Vector.ZERO;
 	private env: Environment = {
 		platforms: [],
@@ -39,9 +39,7 @@ export default class Game {
 		mushrooms: [],
 		links: []
 	};
-	private texts: Text[] = [
-		new Text(new Vector(0, 384), "MathleteDev", 64, __colors__.black)
-	];
+	private texts: Text[] = [];
 	private coins = 0;
 
 	public constructor() {
@@ -92,11 +90,14 @@ export default class Game {
 			jump: false
 		};
 
-		this.player.reset(Object.assign({}, this.start));
+		this.player.reset();
 	}
 
 	public tick() {
 		if (this.run) requestAnimationFrame(() => this.tick());
+
+		if (this.player.top - this.cam.y > this.canvas.height)
+			this.player.respawn();
 
 		this.ctx.fillStyle = __colors__.blue;
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -163,9 +164,9 @@ export default class Game {
 						this.env.lavas.push(new Lava(this.fromCoords(i, j, map)));
 						break;
 					case 4:
-						this.start = this.fromCoords(i, j, map);
+						const start = this.fromCoords(i, j, map);
 
-						this.player.setPosition(Object.assign({}, this.start));
+						this.player = new Player(start);
 						this.cam.x = this.start.x - window.innerWidth / 2;
 						this.cam.y = this.start.y - window.innerHeight / 2;
 						break;

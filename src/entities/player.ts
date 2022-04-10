@@ -21,23 +21,35 @@ export class Player extends Entity {
 	private grounded = false;
 	private flip = false;
 	public dead = false;
+	private start: Vector;
 	private prev: Record<string, Entity | null> = {
 		mushroom: null,
 		link: null
 	};
 
-	public constructor() {
-		super(Vector.ZERO, new Vector(__size__ / 2, __size__), "assets/neo/0.png");
+	public constructor(start: Vector) {
+		super(
+			Object.assign({}, start),
+			new Vector(__size__ / 2, __size__),
+			"assets/neo/0.png"
+		);
+
+		this.start = start;
 	}
 
-	public reset(start: Vector) {
+	public reset() {
 		this.dead = true;
 
 		setTimeout(() => {
 			this.dead = false;
-			this.pos = start;
-			this.vel = Vector.ZERO;
+			this.respawn();
 		}, __reset__);
+	}
+
+	public respawn() {
+		this.pos = Object.assign({}, this.start);
+		this.vel = Vector.ZERO;
+		this.flip = false;
 	}
 
 	public move(left: boolean, right: boolean) {
@@ -155,11 +167,11 @@ export class Player extends Entity {
 		);
 	}
 
-	public setPosition(pos: Vector) {
-		this.pos = pos;
-	}
-
 	public setFlip(flip: boolean) {
 		this.flip = flip;
+	}
+
+	public get top() {
+		return this.pos.y - this.size.y / 2;
 	}
 }
