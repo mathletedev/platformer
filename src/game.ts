@@ -8,6 +8,7 @@ import {
 	Player,
 	Text
 } from "./entities";
+import { Checkpoint } from "./entities/checkpoint";
 import {
 	__animation__,
 	__borders__,
@@ -37,7 +38,8 @@ export default class Game {
 		coins: [],
 		lavas: [],
 		mushrooms: [],
-		links: []
+		links: [],
+		checkpoints: []
 	};
 	private texts: Text[] = [];
 	private coins = 0;
@@ -169,6 +171,8 @@ export default class Game {
 						this.player = new Player(start);
 						this.cam.x = this.start.x - window.innerWidth / 2;
 						this.cam.y = this.start.y - window.innerHeight / 2;
+
+						this.env.checkpoints.push(new Checkpoint(start, true));
 						break;
 					case 5:
 						this.env.mushrooms.push(new Mushroom(this.fromCoords(i, j, map)));
@@ -179,6 +183,11 @@ export default class Game {
 								this.fromCoords(i, j, map),
 								"https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 							)
+						);
+						break;
+					case 7:
+						this.env.checkpoints.push(
+							new Checkpoint(this.fromCoords(i, j, map), false)
 						);
 						break;
 				}

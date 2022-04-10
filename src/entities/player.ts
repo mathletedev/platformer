@@ -64,6 +64,15 @@ export class Player extends Entity {
 	public tick(env: Environment, moving: boolean) {
 		this.pos.x += this.vel.x;
 
+		for (const checkpoint of env.checkpoints) {
+			if (this.checkCollision(checkpoint)) {
+				this.start = checkpoint.getPosition();
+
+				for (const checkpoint of env.checkpoints) checkpoint.setActive(false);
+				checkpoint.setActive(true);
+			}
+		}
+
 		for (const platform of env.platforms) {
 			if (this.checkCollision(platform)) {
 				this.pos.x -=

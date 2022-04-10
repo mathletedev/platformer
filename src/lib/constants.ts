@@ -29,7 +29,8 @@ export const __animation__ = {
 	coin: 100,
 	lava: 500,
 	mushroom: 300,
-	boost: 500
+	boost: 500,
+	flag: 200
 };
 export const __reset__ = 1500;
 export const __borders__: Record<string, number> = {
