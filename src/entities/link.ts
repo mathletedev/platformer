@@ -1,6 +1,6 @@
-import {__animation__} from "../lib/constants";
+import { __animation__ } from "../lib/constants";
 import Vector from "../lib/vector";
-import {Entity} from "./entity";
+import { Entity } from "./entity";
 
 export class Link extends Entity {
 	private og: number;

@@ -1,4 +1,4 @@
-import {__size__} from "./constants";
+import { __size__ } from "./constants";
 
 export default class Vector {
 	public static get ZERO() {

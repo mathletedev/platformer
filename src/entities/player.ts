@@ -8,9 +8,9 @@ import {
 	__size__,
 	__speed__
 } from "../lib/constants";
-import {Environment} from "../lib/types";
+import { Environment } from "../lib/types";
 import Vector from "../lib/vector";
-import {Entity} from "./entity";
+import { Entity } from "./entity";
 
 export class Player extends Entity {
 	private static FRAMES = {

@@ -17,7 +17,7 @@ import {
 	__ground__,
 	__size__
 } from "./lib/constants";
-import {Environment} from "./lib/types";
+import { Environment } from "./lib/types";
 import Vector from "./lib/vector";
 
 export default class Game {
