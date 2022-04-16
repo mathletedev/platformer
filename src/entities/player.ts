@@ -84,7 +84,6 @@ export class Player extends Entity {
 		}
 
 		this.pos.y -= this.vel.y;
-
 		this.grounded = false;
 
 		for (const platform of env.platforms) {
@@ -97,6 +96,20 @@ export class Player extends Entity {
 				this.grounded = this.pos.y < platform.getPosition().y;
 			}
 		}
+
+		if (this.vel.y > 0) this.sprite.src = "assets/neo/4.png";
+		else if (this.vel.y < 0) this.sprite.src = "assets/neo/5.png";
+		else
+			this.sprite.src = `assets/neo/${
+				moving
+					? Player.FRAMES.moving[Entity.getFrame(__animation__.moving, 4)]
+					: Player.FRAMES.idle[Entity.getFrame(__animation__.idling, 2)]
+			}.png`;
+
+		this.vel.x *= __friction__;
+		this.vel.y -= __gravity__;
+
+		if (env.portal && this.checkCollision(env.portal)) return "success";
 
 		for (const coin of env.coins) {
 			if (this.checkCollision(coin))
@@ -134,20 +147,6 @@ export class Player extends Entity {
 			if (!this.checkCollision(link) && this.prev.link === link)
 				this.prev.link = null;
 		}
-
-		this.vel.x *= __friction__;
-		this.vel.y -= __gravity__;
-
-		if (this.vel.y + __gravity__ > 0)
-			return (this.sprite.src = "assets/neo/4.png");
-		if (this.vel.y + __gravity__ < 0)
-			return (this.sprite.src = "assets/neo/5.png");
-
-		this.sprite.src = `assets/neo/${
-			moving
-				? Player.FRAMES.moving[Entity.getFrame(__animation__.moving, 4)]
-				: Player.FRAMES.idle[Entity.getFrame(__animation__.idling, 2)]
-		}.png`;
 	}
 
 	public draw(ctx: CanvasRenderingContext2D, cam: Vector) {
@@ -160,9 +159,9 @@ export class Player extends Entity {
 		if (this.flip) ctx.scale(-1, 1);
 		ctx.drawImage(
 			this.sprite,
-			(this.pos.x + this.size.x * (this.flip ? 1 : -1) - cam.x) *
+			(this.pos.x + (this.flip ? this.size.x * 2 : 0) - cam.x) *
 				(this.flip ? -1 : 1),
-			this.pos.y - this.size.y / 2 - cam.y
+			this.pos.y - cam.y
 		);
 		if (this.flip) ctx.scale(-1, 1);
 	}

@@ -5,4 +5,5 @@ export * from "./link";
 export * from "./mushroom";
 export * from "./platform";
 export * from "./player";
+export * from "./portal";
 export * from "./text";

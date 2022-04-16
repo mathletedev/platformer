@@ -12,11 +12,7 @@ export class Entity {
 	}
 
 	public draw(ctx: CanvasRenderingContext2D, cam: Vector) {
-		ctx.drawImage(
-			this.sprite,
-			this.pos.x - this.size.x / 2 - cam.x,
-			this.pos.y - this.size.y / 2 - cam.y
-		);
+		ctx.drawImage(this.sprite, this.pos.x - cam.x, this.pos.y - cam.y);
 	}
 
 	public getPosition() {

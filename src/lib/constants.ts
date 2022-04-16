@@ -30,7 +30,9 @@ export const __animation__ = {
 	lava: 500,
 	mushroom: 300,
 	boost: 500,
-	flag: 200
+	flag: 200,
+	portal: 200,
+	fade: 0.02
 };
 export const __reset__ = 1500;
 export const __borders__: Record<string, number> = {

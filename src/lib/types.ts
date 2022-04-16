@@ -1,4 +1,4 @@
-import { Coin, Lava, Link, Mushroom, Platform } from "../entities";
+import { Coin, Lava, Link, Mushroom, Platform, Portal } from "../entities";
 import { Checkpoint } from "../entities/checkpoint";
 
 export interface Environment {
@@ -8,4 +8,5 @@ export interface Environment {
 	mushrooms: Mushroom[];
 	links: Link[];
 	checkpoints: Checkpoint[];
+	portal: Portal | null;
 }

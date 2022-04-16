@@ -6,6 +6,7 @@ import {
 	Mushroom,
 	Platform,
 	Player,
+	Portal,
 	Text
 } from "./entities";
 import { Checkpoint } from "./entities/checkpoint";
@@ -33,20 +34,28 @@ export default class Game {
 	private cam = new Vector(-window.innerWidth / 2, -window.innerHeight / 2);
 	private player = new Player(Vector.ZERO);
 	private start = Vector.ZERO;
+	private level = 0;
+	private next = false;
 	private env: Environment = {
 		platforms: [],
 		coins: [],
 		lavas: [],
 		mushrooms: [],
 		links: [],
-		checkpoints: []
+		checkpoints: [],
+		portal: null
 	};
 	private texts: Text[] = [];
 	private coins = 0;
+	private alpha = 1;
+	private fade = false;
 
 	public constructor() {
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;
+
+		this.ctx.fillStyle = "#000000";
+		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
 		window.addEventListener("resize", () => {
 			this.canvas.width = window.innerWidth;
@@ -98,19 +107,32 @@ export default class Game {
 	public tick() {
 		if (this.run) requestAnimationFrame(() => this.tick());
 
-		if (this.player.top - this.cam.y > this.canvas.height)
+		if (this.next && this.alpha >= 1) {
+			this.next = false;
+			return this.loadMap(this.level + 1);
+		}
+
+		if (this.player.top - this.cam.y > this.canvas.height && !this.next)
 			this.player.respawn();
 
 		this.ctx.fillStyle = __colors__.blue;
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
 		for (const type of Object.values(this.env)) {
+			if (!(type instanceof Array)) continue;
 			for (const entity of type) {
 				if (!!entity.tick) entity.tick();
 				entity.draw(this.ctx, this.cam);
 			}
 		}
+
+		if (this.env.coins.length === 0) {
+			this.env.portal?.tick();
+			this.env.portal?.draw(this.ctx, this.cam);
+		}
+
 		for (const text of this.texts) text.draw(this.ctx, this.cam);
+
 		this.player.draw(this.ctx, this.cam);
 
 		let coin = new Image();
@@ -120,17 +142,28 @@ export default class Game {
 
 		this.ctx.fillStyle = __colors__.black;
 		this.ctx.font = "24px Cascadia Code";
-		this.ctx.fillText((this.coins - this.env.coins.length).toString(), 55, 44);
+		this.ctx.fillText(
+			`${this.coins - this.env.coins.length}/${this.coins}`,
+			55,
+			44
+		);
 
 		if (this.player.dead) return;
 
 		this.player.move(this.keys.left, this.keys.right);
 		if (this.keys.jump) this.player.jump();
 
-		if (
-			this.player.tick(this.env, this.keys.left || this.keys.right) === "reset"
-		)
-			this.reset();
+		switch (this.player.tick(this.env, this.keys.left || this.keys.right)) {
+			case "success":
+				if (this.env.coins.length > 0) break;
+				this.fade = true;
+				this.next = true;
+				break;
+			case "reset":
+				if (this.next) break;
+				this.reset();
+				break;
+		}
 
 		const pos = this.player.getPosition();
 		this.cam.x -= (this.cam.x + this.canvas.width / 2 - pos.x) * __follow__.x;
@@ -138,9 +171,32 @@ export default class Game {
 
 		this.cam = this.cam.round();
 		if (this.cam.y > __ground__) this.cam.y = __ground__;
+
+		if (this.fade && this.alpha < 1) this.alpha += __animation__.fade;
+		else if (!this.fade && this.alpha > 0) this.alpha -= __animation__.fade;
+
+		if (!this.alpha) return;
+
+		this.ctx.fillStyle = `rgba(0, 0, 0, ${this.alpha})`;
+		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 	}
 
-	public loadMap(map: number[][]) {
+	public loadMap(level: number) {
+		this.level = level;
+		this.fade = false;
+
+		const map: number[][] = require(`./maps/${level}.json`);
+
+		this.env = {
+			platforms: [],
+			coins: [],
+			lavas: [],
+			checkpoints: [],
+			mushrooms: [],
+			links: [],
+			portal: null
+		};
+
 		for (let i = 0; i < map.length; i++) {
 			for (let j = 0; j < map[i].length; j++) {
 				if (map[i][j] === 0) continue;
@@ -169,8 +225,8 @@ export default class Game {
 						const start = this.fromCoords(i, j, map);
 
 						this.player = new Player(start);
-						this.cam.x = this.start.x - window.innerWidth / 2;
-						this.cam.y = this.start.y - window.innerHeight / 2;
+						this.cam.x = start.x - window.innerWidth / 2;
+						this.cam.y = start.y - window.innerHeight / 2;
 
 						this.env.checkpoints.push(new Checkpoint(start, true));
 						break;
@@ -189,6 +245,9 @@ export default class Game {
 						this.env.checkpoints.push(
 							new Checkpoint(this.fromCoords(i, j, map), false)
 						);
+						break;
+					case 8:
+						this.env.portal = new Portal(this.fromCoords(i, j, map));
 						break;
 				}
 			}
