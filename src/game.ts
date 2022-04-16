@@ -198,6 +198,7 @@ export default class Game {
 			links: [],
 			portal: null
 		};
+		this.texts = [];
 
 		for (let i = 0; i < map.length; i++) {
 			for (let j = 0; j < map[i].length; j++) {
