@@ -33,7 +33,6 @@ export default class Game {
 	};
 	private cam = new Vector(-window.innerWidth / 2, -window.innerHeight / 2);
 	private player = new Player(Vector.ZERO);
-	private start = Vector.ZERO;
 	private level = 0;
 	private next = false;
 	private env: Environment = {
@@ -185,7 +184,10 @@ export default class Game {
 		this.level = level;
 		this.fade = false;
 
-		const map: number[][] = require(`./maps/${level}.json`);
+		const {
+			map,
+			texts
+		}: { map: number[][]; texts: any[][] } = require(`./levels/${level}.json`);
 
 		this.env = {
 			platforms: [],
@@ -252,6 +254,11 @@ export default class Game {
 				}
 			}
 		}
+
+		for (const text of texts)
+			this.texts.push(
+				new Text(new Vector(text[1], text[2]), text[0], 32, __colors__.black)
+			);
 
 		this.coins = this.env.coins.length;
 	}

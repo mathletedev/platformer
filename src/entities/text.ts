@@ -1,3 +1,4 @@
+import { __size__ } from "../lib/constants";
 import Vector from "../lib/vector";
 
 export class Text {
@@ -20,7 +21,7 @@ export class Text {
 		const size = ctx.measureText(this.text);
 		ctx.fillText(
 			this.text,
-			this.pos.x - size.width / 2 - cam.x,
+			this.pos.x - size.width / 2 + __size__ / 2 - cam.x,
 			this.pos.y - this.size / 2 - cam.y
 		);
 	}
