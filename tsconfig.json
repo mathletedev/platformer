@@ -1,13 +1,13 @@
 {
 	"compilerOptions": {
-		"target": "es6",
-		"module": "es6",
-		"strict": true,
-		"moduleResolution": "node",
 		"esModuleInterop": true,
-		"skipLibCheck": true,
+		"module": "es6",
+		"moduleResolution": "node",
 		"removeComments": true,
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"target": "es6"
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules"]
