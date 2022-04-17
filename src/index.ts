@@ -282,18 +282,13 @@ const handleKey = (ev: KeyboardEvent, down: boolean) => {
 	ev.preventDefault();
 };
 
-const fromCoords = (i: number, j: number, map: number[][]): Vector => {
-	return new Vector(
+const fromCoords = (i: number, j: number, map: number[][]): Vector =>
+	new Vector(
 		(j - (map[i].length - 1) / 2) * __size__,
 		(i - (map.length - 1) / 2) * __size__
 	);
-};
-
-const exists = (map: number[][], i: number, j: number) => {
-	return (
-		i >= 0 && j >= 0 && i < map.length && j < map[i].length && map[i][j] === 1
-	);
-};
+const exists = (map: number[][], i: number, j: number) =>
+	i >= 0 && j >= 0 && i < map.length && j < map[i].length && map[i][j] === 1;
 
 loadMap(0);
 play(true);
