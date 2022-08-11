@@ -1,3 +1,0 @@
-# mathlete.dev
-
-> My portfolio!
